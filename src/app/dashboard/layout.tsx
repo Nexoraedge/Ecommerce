@@ -2,68 +2,54 @@ import { ReactNode } from 'react';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { Navbar } from '@/components/ui/navbar';
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
 export default async function DashboardLayout({ children }: DashboardLayoutProps) {
-  const cookieStore = await cookies();
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value || '';
+          try {
+            const cookieStore = cookies();
+            return cookieStore.get(name)?.value ?? '';
+          } catch (error) {
+            console.error('Error getting cookie:', error);
+            return '';
+          }
+        },
+        set(name: string, value: string, options: any) {
+          // This is handled by the middleware
+        },
+        remove(name: string, options: any) {
+          // This is handled by the middleware
         },
       },
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
 
-  // Convert complex objects to plain objects before passing
-  const plainSession = session ? { ...session } : null;
-  
-  if (!plainSession) {
+    if (!session) {
+      redirect('/auth/signin');
+    }
+
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {children}
+        </main>
+      </div>
+    );
+  } catch (error) {
+    console.error('Session error:', error);
     redirect('/auth/signin');
   }
-
-  return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <div className="mr-4 flex">
-            <a className="mr-6 flex items-center space-x-2" href="/dashboard">
-              <span className="font-bold">E-Commerce Dashboard</span>
-            </a>
-          </div>
-          <nav className="flex flex-1 items-center justify-end space-x-4">
-            <form
-              action={async () => {
-                'use server';
-                await supabase.auth.signOut();
-                redirect('/auth/signin');
-              }}
-            >
-              // Convert button to a client component
-              'use client';
-              <button
-                type="submit"
-                className="text-sm font-medium text-muted-foreground hover:text-primary"
-                onClick={() => {
-                  // Handle click event
-                }}
-              >
-                Sign Out
-              </button>
-            </form>
-          </nav>
-        </div>
-      </header>
-      <main className="flex-1">{children}</main>
-    </div>
-  );
 }

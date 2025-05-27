@@ -3,59 +3,82 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: any) {
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-        },
-        remove(name: string, options: any) {
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-        },
+  try {
+    let response = NextResponse.next({
+      request: {
+        headers: request.headers,
       },
+    });
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value;
+          },
+          set(name: string, value: string, options: any) {
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            });
+          },
+          remove(name: string, options: any) {
+            response.cookies.set({
+              name,
+              value: '',
+              ...options,
+            });
+          },
+        },
+      }
+    );
+
+    // Refresh session and get current session data
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error('Auth error:', error);
+      return response;
     }
-  );
 
-  const { data: { session } } = await supabase.auth.getSession();
+    // Handle authentication for protected routes
+    const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
+    const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard');
 
-  // Protect routes that start with /dashboard
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    if (!session) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    if (isDashboardRoute && !session) {
+      // Save the original URL to redirect back after login
+      const redirectUrl = new URL('/auth/signin', request.url);
+      redirectUrl.searchParams.set('next', request.nextUrl.pathname);
+      return NextResponse.redirect(redirectUrl);
     }
-  }
 
-  // Redirect authenticated users away from auth pages
-  if (
-    session &&
-    (request.nextUrl.pathname.startsWith('/auth/signin') ||
-      request.nextUrl.pathname.startsWith('/auth/signup'))
-  ) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
+    if (isAuthRoute && session) {
+      // Get the intended destination or default to dashboard
+      const next = request.nextUrl.searchParams.get('next') || '/dashboard';
+      return NextResponse.redirect(new URL(next, request.url));
+    }
 
-  return response;
+    return response;
+  } catch (e) {
+    console.error('Middleware error:', e);
+    return NextResponse.next();
+  }
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public files with specific extensions
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };

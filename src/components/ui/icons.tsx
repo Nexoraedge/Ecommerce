@@ -1,4 +1,4 @@
-import { Loader2, LucideProps, Moon, SunMedium, Twitter, Check, ChevronLeft, ChevronRight, Command, CreditCard, File, FileText, Github, HelpCircle, Image, Laptop, LayoutGrid, LifeBuoy, LogOut, Mail, MessageSquare, Plus, PlusCircle, Settings, Trash, User, UserPlus, Users, X } from 'lucide-react';
+import { Loader2, LucideProps, Moon, SunMedium, Twitter, Check, ChevronLeft, ChevronRight, Command, CreditCard, File, FileText, Github, HelpCircle, Image, Laptop, LayoutGrid, LifeBuoy, LogOut, Mail, MessageSquare, Plus, PlusCircle, Settings, Store, Trash, User, UserPlus, Users, X } from 'lucide-react';
 
 export const Icons = {
   sun: SunMedium,
@@ -52,4 +52,5 @@ export const Icons = {
   check: Check,
   logout: LogOut,
   laptop: Laptop,
+  store: Store,
 };
