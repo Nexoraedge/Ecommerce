@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, ArrowLeft } from 'lucide-react';
 
 interface ProductFiltersProps {
   categories: string[];
@@ -13,14 +13,18 @@ interface ProductFiltersProps {
     maxPrice?: number;
     brand?: string;
   }) => void;
+  isMobile?: boolean;
+  onClose?: () => void;
 }
 
 export default function ProductFilters({
   categories,
   brands,
   onFilterChange,
+  isMobile = false,
+  onClose,
 }: ProductFiltersProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(isMobile);
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [selectedBrand, setSelectedBrand] = useState<string>();
   const [priceRange, setPriceRange] = useState<{
@@ -44,15 +48,25 @@ export default function ProductFilters({
     onFilterChange({});
   };
 
+  // Handle closing the filter panel
+  const handleClose = () => {
+    setIsOpen(false);
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
     <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-4 py-2 border rounded-md hover:bg-gray-50"
-      >
-        <Filter className="w-5 h-5" />
-        <span>Filters</span>
-      </button>
+      {!isMobile && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center space-x-2 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+        >
+          <Filter className="w-5 h-5" />
+          <span>Filters</span>
+        </button>
+      )}
 
       <AnimatePresence>
         {isOpen && (
@@ -62,31 +76,41 @@ export default function ProductFilters({
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black z-40 lg:hidden"
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden"
             />
 
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              className="fixed right-0 top-0 h-full w-full max-w-xs bg-white shadow-xl z-50 lg:relative lg:top-auto lg:right-auto lg:h-auto lg:w-64 lg:translate-x-0 lg:shadow-none"
+              className="fixed right-0 top-0 h-full w-full max-w-xs bg-card dark:bg-card/95 shadow-xl z-50 lg:relative lg:top-auto lg:right-auto lg:h-auto lg:w-64 lg:translate-x-0 lg:shadow-none border-l border-border overflow-y-auto"
             >
-              <div className="p-4 border-b lg:border-none">
+              <div className="p-4 border-b border-border sticky top-0 bg-card dark:bg-card/95 z-10">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Filters</h2>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleClose}
+                      className="p-2 hover:bg-muted rounded-full transition-colors"
+                      aria-label="Back"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <h2 className="text-lg font-medium text-foreground">Filters</h2>
+                  </div>
                   <button
-                    onClick={() => setIsOpen(false)}
-                    className="lg:hidden p-2 hover:bg-gray-100 rounded-full"
+                    onClick={handleClose}
+                    className="p-2 hover:bg-muted rounded-full transition-colors"
+                    aria-label="Close"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
               </div>
 
-              <div className="p-4 space-y-6">
+              <div className="p-4 space-y-6 text-foreground">
                 {/* Categories */}
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Category</h3>
+                  <h3 className="text-sm font-medium mb-3 text-foreground">Category</h3>
                   <div className="space-y-2">
                     {categories.map((category) => (
                       <label
@@ -105,7 +129,7 @@ export default function ProductFilters({
                           }}
                           className="text-black focus:ring-black"
                         />
-                        <span className="text-sm">{category}</span>
+                        <span className="text-sm text-foreground">{category}</span>
                       </label>
                     ))}
                   </div>
@@ -113,10 +137,10 @@ export default function ProductFilters({
 
                 {/* Price Range */}
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Price Range</h3>
+                  <h3 className="text-sm font-medium mb-3 text-foreground">Price Range</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs text-gray-500">Min</label>
+                      <label className="text-xs text-muted-foreground">Min</label>
                       <input
                         type="number"
                         value={priceRange.min || ''}
@@ -132,7 +156,7 @@ export default function ProductFilters({
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500">Max</label>
+                      <label className="text-xs text-muted-foreground">Max</label>
                       <input
                         type="number"
                         value={priceRange.max || ''}
@@ -152,7 +176,7 @@ export default function ProductFilters({
 
                 {/* Brands */}
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Brand</h3>
+                  <h3 className="text-sm font-medium mb-3 text-foreground">Brand</h3>
                   <div className="space-y-2">
                     {brands.map((brand) => (
                       <label key={brand} className="flex items-center space-x-2">
@@ -168,7 +192,7 @@ export default function ProductFilters({
                           }}
                           className="text-black focus:ring-black"
                         />
-                        <span className="text-sm">{brand}</span>
+                        <span className="text-sm text-foreground">{brand}</span>
                       </label>
                     ))}
                   </div>
@@ -177,7 +201,7 @@ export default function ProductFilters({
                 {/* Clear Filters */}
                 <button
                   onClick={clearFilters}
-                  className="w-full px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                  className="w-full px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors border border-border mt-4"
                 >
                   Clear All Filters
                 </button>

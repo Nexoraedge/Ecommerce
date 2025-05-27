@@ -37,10 +37,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       viewport={{ once: true }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="group relative bg-white rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="group relative bg-card dark:bg-card/95 rounded-lg border border-border overflow-hidden transform-gpu transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:hover:shadow-primary/5"
     >
       <Link href={`/products/${product.id}`}>
-        <div className="relative aspect-square overflow-hidden bg-gray-100">
+        <div className="relative aspect-square overflow-hidden bg-muted/50 dark:bg-muted/20">
           <motion.div
             animate={{
               scale: isHovered ? 1.1 : 1,
@@ -63,7 +63,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/40 flex items-center justify-center gap-4"
+                className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center gap-4"
               >
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -72,9 +72,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                     e.preventDefault();
                     handleAddToCart();
                   }}
-                  className="p-3 bg-white rounded-full shadow-lg"
+                  className="p-3 bg-background dark:bg-card rounded-full shadow-lg hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
-                  <ShoppingCart className="h-5 w-5 text-gray-900" />
+                  <ShoppingCart className="h-5 w-5" />
                 </motion.button>
                 {/* Wishlist Button */}
                 <div className="p-0">
@@ -96,18 +96,18 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       <div className="p-4">
         <Link href={`/products/${product.id}`}>
-          <h3 className="text-lg font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
+          <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
             {product.name}
           </h3>
         </Link>
         <p className="mt-1 text-sm text-gray-500">{product.description}</p>
 
         <div className="mt-2 flex items-center justify-between">
-          <span className="text-lg font-bold text-gray-900">
-            ${product.price.toFixed(2)}
-          </span>
-          <div className="flex items-center">
-            <Star className="h-5 w-5 text-yellow-400 fill-current" />
+          <div>
+            <p className="text-lg font-bold text-foreground">${product.price.toFixed(2)}</p>
+          </div>
+          <div className="flex items-center text-yellow-500 dark:text-yellow-400 space-x-1">
+            <Star className="h-4 w-4 fill-current" />
             <span className="ml-1 text-sm text-gray-500">
               {product.rating} ({product.reviews})
             </span>
@@ -117,7 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <motion.button
           onClick={handleAddToCart}
           disabled={isAdding}
-          className="mt-4 w-full py-2 px-4 bg-black text-white rounded-md hover:bg-gray-800 transition-all relative overflow-hidden"
+          className="mt-4 w-full py-2 px-4 bg-primary hover:opacity-90 text-primary-foreground rounded-md font-medium transition-opacity flex items-center justify-center"
         >
           <AnimatePresence mode="wait">
             {isAdding ? (

@@ -59,7 +59,6 @@ const categories = [
 
 export default function HeroSection() {
   const [current, setCurrent] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const nextSlide = useCallback(() => {
     setCurrent((current) => (current === carouselItems.length - 1 ? 0 : current + 1));
@@ -77,70 +76,8 @@ export default function HeroSection() {
     return () => clearInterval(interval);
   }, [nextSlide]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Redirect to search page with query
-    window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
-  };
-
   return (
     <section className="bg-background">
-      {/* Search bar - Similar to Flipkart/Meesho */}
-      <div className="bg-primary py-3 px-4 md:py-4 dark:bg-primary/90">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-4">
-          <form 
-            onSubmit={handleSearch}
-            className="relative flex-1 flex w-full max-w-3xl"
-          >
-            <input
-              type="text"
-              placeholder="Search for products, brands and more..."
-              className="w-full py-2 px-4 pr-10 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button 
-              type="submit"
-              className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Search"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-          </form>
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/auth/login" 
-              className="text-primary-foreground hover:underline font-medium"
-            >
-              Login
-            </Link>
-            <Link 
-              href="/cart" 
-              className="bg-primary-foreground text-primary px-4 py-1.5 rounded-md font-medium hover:bg-primary-foreground/90 transition-colors"
-            >
-              Cart
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Category shortcuts - Similar to Flipkart/Meesho */}
-      <div className="bg-card border-b border-border py-4 px-4 dark:bg-card/80">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
-            {categories.map((category, index) => (
-              <Link 
-                key={index} 
-                href={category.link}
-                className="flex flex-col items-center justify-center p-2 hover:text-primary transition-colors"
-              >
-                <span className="text-2xl mb-1">{category.icon}</span>
-                <span className="text-xs font-medium">{category.name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Main carousel */}
       <div className="relative overflow-hidden">
@@ -238,7 +175,7 @@ export default function HeroSection() {
                 className={`w-2.5 h-2.5 rounded-full transition-colors ${index === current ? 'bg-white' : 'bg-white/50'}`}
                 aria-label={`Go to slide ${index + 1}`}
               />
-            ))}n
+            ))}
           </div>
         </div>
       </div>

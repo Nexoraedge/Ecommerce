@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, Star, X, Eye, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Heart, Star, X, Eye, ChevronRight, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import useAuth from '@/hooks/useAuth';
 
 interface Product {
   id: string;
@@ -99,6 +100,7 @@ const similarProductsMap: Record<string, SimilarProduct[]> = {
 };
 
 export default function FeaturedProducts() {
+  const { user } = useAuth();
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -106,12 +108,17 @@ export default function FeaturedProducts() {
   const [quantity, setQuantity] = useState<number>(1);
   const [viewedProducts, setViewedProducts] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const openProductQuickView = (product: Product) => {
     setSelectedProduct(product);
     setSelectedColor(product.colors?.[0] || null);
     setSelectedSize(product.sizes?.[0] || null);
     setQuantity(1);
+    setIsModalOpen(true);
+    
+    // Prevent body scrolling when modal is open
+    document.body.style.overflow = 'hidden';
     
     // Track viewed products for personalized suggestions
     if (!viewedProducts.includes(product.id)) {
@@ -125,10 +132,18 @@ export default function FeaturedProducts() {
   };
 
   const closeProductQuickView = () => {
-    setSelectedProduct(null);
-    setSelectedColor(null);
-    setSelectedSize(null);
-    setQuantity(1);
+    setIsModalOpen(false);
+    
+    // Allow body scrolling again
+    document.body.style.overflow = 'auto';
+    
+    // Delay the state reset to allow the animation to complete
+    setTimeout(() => {
+      setSelectedProduct(null);
+      setSelectedColor(null);
+      setSelectedSize(null);
+      setQuantity(1);
+    }, 300);
   };
   
   const incrementQuantity = () => {
@@ -355,7 +370,7 @@ export default function FeaturedProducts() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto max-h-screen"
               onClick={closeProductQuickView}
             >
               <motion.div
@@ -363,18 +378,29 @@ export default function FeaturedProducts() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: 'spring', damping: 20 }}
-                className="bg-card dark:bg-card/95 max-w-5xl w-full rounded-xl shadow-xl overflow-hidden border border-border"
+                className="bg-card dark:bg-card/95 max-w-5xl w-full rounded-xl shadow-xl border border-border max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Back button at the top */}
+                <div className="sticky top-0 z-20 bg-card dark:bg-card/95 p-4 border-b border-border flex items-center justify-between">
+                  <button
+                    onClick={closeProductQuickView}
+                    className="flex items-center text-foreground hover:text-primary transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5 mr-2" />
+                    <span className="font-medium">Back</span>
+                  </button>
+                  <button
+                    onClick={closeProductQuickView}
+                    className="p-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
                 <div className="flex flex-col md:flex-row">
                   {/* Product Image */}
                   <div className="md:w-1/2 relative">
-                    <button
-                      onClick={closeProductQuickView}
-                      className="absolute top-4 right-4 z-10 p-2 bg-white/80 rounded-full hover:bg-white md:hidden"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
                     <div className="aspect-square">
                       <img 
                         src={selectedProduct.image} 
@@ -391,12 +417,6 @@ export default function FeaturedProducts() {
                         <h3 className="text-2xl font-bold text-foreground mb-2">{selectedProduct.name}</h3>
                         <p className="text-primary font-medium mb-2">{selectedProduct.category}</p>
                       </div>
-                      <button
-                        onClick={closeProductQuickView}
-                        className="p-2 text-muted-foreground hover:text-foreground hidden md:block"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
                     </div>
                     
                     {selectedProduct.rating && (
@@ -491,11 +511,33 @@ export default function FeaturedProducts() {
                     
                     {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mt-auto">
-                      <button className="flex-1 bg-primary text-primary-foreground py-3 rounded-md font-medium hover:opacity-90 transition-opacity flex items-center justify-center">
+                      <button 
+                        onClick={() => {
+                          if (!selectedSize || !selectedColor) {
+                            alert('Please select a size and color');
+                            return;
+                          }
+                          // Add to cart logic here
+                          alert('Item added to cart');
+                        }}
+                        disabled={!selectedSize || !selectedColor}
+                        className="flex-1 bg-primary text-primary-foreground py-3 rounded-md font-medium hover:opacity-90 transition-opacity flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         Add to Cart
                       </button>
-                      <button className="flex-1 bg-orange-500 dark:bg-orange-600 text-white py-3 rounded-md font-medium hover:opacity-90 transition-opacity">
+                      <button 
+                        onClick={() => {
+                          if (!selectedSize || !selectedColor) {
+                            alert('Please select a size and color');
+                            return;
+                          }
+                          // Buy now logic
+                          alert('Proceeding to checkout');
+                        }}
+                        disabled={!selectedSize || !selectedColor}
+                        className="flex-1 bg-orange-500 dark:bg-orange-600 text-white py-3 rounded-md font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
                         Buy Now
                       </button>
                     </div>
@@ -539,41 +581,45 @@ export default function FeaturedProducts() {
                         View more <ChevronRight className="w-4 h-4 ml-1" />
                       </Link>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                      {similarProductsMap[selectedProduct.id].map((product) => (
-                        <div 
-                          key={product.id} 
-                          className="group cursor-pointer bg-card dark:bg-card/80 rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            closeProductQuickView();
-                            // Use setTimeout to allow the modal to close before opening a new one
-                            setTimeout(() => {
-                              const matchingProduct = dummyProducts.find(p => p.id === product.id);
-                              if (matchingProduct) {
-                                openProductQuickView(matchingProduct);
-                              }
-                            }, 300);
-                          }}
-                        >
-                          <div className="aspect-square overflow-hidden">
-                            <img 
-                              src={product.image} 
-                              alt={product.name} 
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                          <div className="p-3">
-                            <h5 className="text-sm font-medium line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h5>
-                            <div className="flex items-center justify-between mt-1">
-                              <p className="text-sm font-bold text-foreground">${product.price}</p>
-                              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <ShoppingCart className="h-4 w-4 text-primary" />
+                    <div className="overflow-hidden">
+                      <div className="-mx-4 px-4 pb-4 overflow-x-auto hide-scrollbar">
+                        <div className="flex space-x-4 min-w-max">
+                          {similarProductsMap[selectedProduct.id].map((product) => (
+                            <div 
+                              key={product.id} 
+                              className="group cursor-pointer bg-card dark:bg-card/80 rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeProductQuickView();
+                                // Use setTimeout to allow the modal to close before opening a new one
+                                setTimeout(() => {
+                                  const productToView = dummyProducts.find(p => p.id === product.id);
+                                  if (productToView) {
+                                    openProductQuickView(productToView);
+                                  }
+                                }, 300);
+                              }}
+                            >
+                              <div className="aspect-square overflow-hidden">
+                                <img 
+                                  src={product.image} 
+                                  alt={product.name} 
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              </div>
+                              <div className="p-3">
+                                <h5 className="text-sm font-medium line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h5>
+                                <div className="flex items-center justify-between mt-1">
+                                  <p className="text-sm font-bold text-foreground">${product.price}</p>
+                                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <ShoppingCart className="h-4 w-4 text-primary" />
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </div>
                 )}
