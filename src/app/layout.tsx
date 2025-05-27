@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Link from 'next/link';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/components/auth-provider';
 import CartDrawer from '@/components/cart/CartDrawer';
 import CartButton from '@/components/cart/CartButton';
 import ThemeToggle from '@/components/ThemeToggle';
 import MobileNav from '@/components/MobileNav';
+import UserProfileNav from '@/components/UserProfileNav';
+import SearchBar from '@/components/SearchBar';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -83,8 +86,10 @@ export default function RootLayout({
                   
                   {/* Right side controls */}
                   <div className="flex items-center space-x-4">
+                    <SearchBar />
                     <ThemeToggle />
                     <CartButton />
+                    <UserProfileNav />
                     <div className="md:hidden">
                       <MobileNav />
                     </div>

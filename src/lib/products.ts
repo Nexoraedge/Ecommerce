@@ -277,8 +277,8 @@ export const filterProducts = (filters: {
   sizes?: string[];
   colors?: string[];
   brand?: string;
-}) => {
-  return products.filter(product => {
+}, baseProducts: Product[] = products) => {
+  return baseProducts.filter(product => {
     if (filters.category && product.category !== filters.category) return false;
     if (filters.minPrice && product.price < filters.minPrice) return false;
     if (filters.maxPrice && product.price > filters.maxPrice) return false;

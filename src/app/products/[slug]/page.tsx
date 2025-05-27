@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Star, Minus, Plus, Heart, ArrowLeft, Share2, ShoppingBag } from 'lucide-react';
+import { Star, Minus, Plus, Heart, ArrowLeft, ArrowRight, Share2, ShoppingBag } from 'lucide-react';
 import { getProduct, getRelatedProducts } from '@/lib/products';
 import useCart from '@/hooks/useCart';
 import ProductGrid from '@/components/product/ProductGrid';
@@ -349,11 +349,46 @@ export default function ProductPage() {
         
         {/* You might also like section - products from other categories */}
         <div className="mt-16 border-t border-border pt-8">
-          <h2 className="text-2xl font-bold text-foreground mb-6">
-            You Might Also Like
-          </h2>
-          <div className="mt-6">
-            <ProductGrid products={getRelatedProducts('', product.id).slice(0, 4)} />
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-foreground">
+              You Might Also Like
+            </h2>
+            <Link 
+              href="/products" 
+              className="text-sm text-primary hover:underline flex items-center"
+            >
+              View all <ArrowRight className="ml-1 h-4 w-4" />
+            </Link>
+          </div>
+          <div className="mt-6 overflow-hidden">
+            <div className="-mx-4 px-4 pb-4 overflow-x-auto hide-scrollbar">
+              <div className="flex space-x-4 min-w-max">
+                {getRelatedProducts('', product.id).slice(0, 6).map((relatedProduct) => (
+                  <div 
+                    key={relatedProduct.id} 
+                    className="w-[200px] flex-shrink-0 group"
+                  >
+                    <Link href={`/products/${relatedProduct.id}`}>
+                      <div className="aspect-square rounded-lg overflow-hidden border border-border bg-card mb-2">
+                        <Image
+                          src={relatedProduct.images[0]}
+                          alt={relatedProduct.name}
+                          width={200}
+                          height={200}
+                          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <h3 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">
+                        {relatedProduct.name}
+                      </h3>
+                      <p className="text-primary font-semibold mt-1">
+                        ${relatedProduct.price.toFixed(2)}
+                      </p>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
