@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,6 +9,8 @@ import { Star, Minus, Plus, Heart, ArrowLeft, ArrowRight, Share2, ShoppingBag } 
 import { getProduct, getRelatedProducts } from '@/lib/products';
 import useCart from '@/hooks/useCart';
 import ProductGrid from '@/components/product/ProductGrid';
+import ProductReviews from '@/components/product/ProductReviews';
+import RelatedProducts from '@/components/product/RelatedProducts';
 
 export default function ProductPage() {
   const router = useRouter();
@@ -21,6 +23,20 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [showShareOptions, setShowShareOptions] = useState(false);
+  
+  // Save to recently viewed
+  useEffect(() => {
+    if (product) {
+      // Get existing recently viewed products from localStorage
+      const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+      
+      // Add current product to the beginning if not already there
+      if (!recentlyViewed.includes(product.id)) {
+        const updatedRecentlyViewed = [product.id, ...recentlyViewed].slice(0, 10);
+        localStorage.setItem('recentlyViewed', JSON.stringify(updatedRecentlyViewed));
+      }
+    }
+  }, [product]);
 
   if (!product) {
     return (
@@ -82,10 +98,10 @@ export default function ProductPage() {
                   <div className="text-sm font-medium mb-2">Share via</div>
                   <div className="grid grid-cols-4 gap-3">
                     <button className="flex flex-col items-center justify-center p-2 hover:bg-muted rounded-md">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mb-1">
-                        <span className="text-white text-xs">f</span>
+                      <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center mb-1">
+                        <span className="text-white text-xs">a</span>
                       </div>
-                      <span className="text-xs">Facebook</span>
+                      <span className="text-xs">Apple</span>
                     </button>
                     <button className="flex flex-col items-center justify-center p-2 hover:bg-muted rounded-md">
                       <div className="w-8 h-8 bg-sky-400 rounded-full flex items-center justify-center mb-1">
@@ -100,10 +116,10 @@ export default function ProductPage() {
                       <span className="text-xs">WhatsApp</span>
                     </button>
                     <button className="flex flex-col items-center justify-center p-2 hover:bg-muted rounded-md">
-                      <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center mb-1">
-                        <span className="text-xs">+</span>
+                      <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center mb-1">
+                        <span className="text-white text-xs">g</span>
                       </div>
-                      <span className="text-xs">More</span>
+                      <span className="text-xs">Google</span>
                     </button>
                   </div>
                 </div>
@@ -232,7 +248,7 @@ export default function ProductPage() {
                     key={size}
                     onClick={() => setSelectedSize(size)}
                     className={`flex items-center justify-center rounded-md py-2 text-sm font-medium ${selectedSize === size
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-primary  text-primary-foreground'
                       : 'bg-card text-foreground border border-border hover:border-primary/50'}`}
                   >
                     {size}
@@ -335,61 +351,17 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Similar products section */}
-        {relatedProducts.length > 0 && (
-          <div className="mt-16 border-t border-border pt-8">
-            <h2 className="text-2xl font-bold text-foreground mb-6">
-              Similar Products
-            </h2>
-            <div className="mt-6">
-              <ProductGrid products={relatedProducts} />
-            </div>
-          </div>
-        )}
+        {/* Product Reviews */}
+        <ProductReviews productId={product.id} initialReviews={[]} />
         
-        {/* You might also like section - products from other categories */}
+        {/* Similar products section */}
         <div className="mt-16 border-t border-border pt-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-foreground">
-              You Might Also Like
-            </h2>
-            <Link 
-              href="/products" 
-              className="text-sm text-primary hover:underline flex items-center"
-            >
-              View all <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
-          </div>
-          <div className="mt-6 overflow-hidden">
-            <div className="-mx-4 px-4 pb-4 overflow-x-auto hide-scrollbar">
-              <div className="flex space-x-4 min-w-max">
-                {getRelatedProducts('', product.id).slice(0, 6).map((relatedProduct) => (
-                  <div 
-                    key={relatedProduct.id} 
-                    className="w-[200px] flex-shrink-0 group"
-                  >
-                    <Link href={`/products/${relatedProduct.id}`}>
-                      <div className="aspect-square rounded-lg overflow-hidden border border-border bg-card mb-2">
-                        <Image
-                          src={relatedProduct.images[0]}
-                          alt={relatedProduct.name}
-                          width={200}
-                          height={200}
-                          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <h3 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">
-                        {relatedProduct.name}
-                      </h3>
-                      <p className="text-primary font-semibold mt-1">
-                        ${relatedProduct.price.toFixed(2)}
-                      </p>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <RelatedProducts 
+            currentProductId={product.id} 
+            category={product.category} 
+            title="Similar Products" 
+            viewAllLink={`/categories/${product.category}`} 
+          />
         </div>
       </div>
     </div>

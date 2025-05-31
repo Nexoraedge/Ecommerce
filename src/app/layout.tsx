@@ -9,6 +9,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import MobileNav from '@/components/MobileNav';
 import UserProfileNav from '@/components/UserProfileNav';
 import SearchBar from '@/components/SearchBar';
+import ReportBugButton from '@/components/ReportBugButton';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -29,59 +30,72 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <div className="min-h-screen bg-background">
-              <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+              <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-500/20">
+                <div className="container flex h-16 min-h-[64px] items-center justify-between px-4 md:px-6">
                   {/* Logo */}
-                  <a className="flex items-center space-x-2" href="/">
-                    <span className="font-bold text-xl">
+                  <Link className="flex items-center space-x-3" href="/">
+                    <div className="w-8 h-8 rounded-full overflow-hidden">
+                      <img 
+                        src="https://picsum.photos/200" 
+                        alt="Logo" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className="font-bold max-sm:hidden text-xl">
                       E-Commerce
                     </span>
-                  </a>
+                  </Link>
                   
                   {/* Desktop Navigation */}
                   <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
                     <div className="relative group">
-                      <a
+                      <Link
                         className="transition-colors hover:text-foreground/80 flex items-center"
                         href="/categories"
                       >
                         Categories
-                      </a>
-                      <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                        <div className="bg-card dark:bg-card shadow-lg rounded-lg py-2 w-48">
-                          <a
+                      </Link>
+                      <div className="absolute left-0 top-full pt-2 opacity-0 rounded-lg border-[1px] invisible group-hover:opacity-100  bg-gray-700/60 group-hover:visible transition-all duration-200">
+                        <div className="  shadow-lg py-2 w-48">
+                          <Link
                             href="/categories/men"
-                            className="block px-4 py-2 hover:bg-muted text-foreground"
+                            className="block px-4 py-2 hover:bg-muted   text-white"
                           >
                             Men
-                          </a>
-                          <a
+                          </Link>
+                          <Link
                             href="/categories/women"
-                            className="block px-4 py-2 hover:bg-muted text-foreground"
+                            className="block px-4 py-2 hover:bg-muted  text-white"
                           >
                             Women
-                          </a>
-                          <a
+                          </Link>
+                          <Link
                             href="/categories/kids"
-                            className="block px-4 py-2 hover:bg-muted text-foreground"
+                            className="block px-4 py-2 hover:bg-muted  text-white"
                           >
                             Kids
-                          </a>
+                          </Link>
+                          <Link
+                            href="/categories/accessories"
+                            className="block px-4 py-2 hover:bg-muted  text-white"
+                          >
+                            Accessories
+                          </Link>
                         </div>
                       </div>
                     </div>
-                    <a
+                    <Link
                       className="transition-colors hover:text-foreground/80"
                       href="/products"
                     >
                       All Products
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                       className="transition-colors hover:text-foreground/80"
                       href="/about"
                     >
                       About
-                    </a>
+                    </Link>
                   </nav>
                   
                   {/* Right side controls */}
@@ -98,6 +112,7 @@ export default function RootLayout({
               </header>
               <main>{children}</main>
               <CartDrawer />
+              <ReportBugButton />
             </div>
           </ThemeProvider>
         </AuthProvider>

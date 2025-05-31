@@ -8,7 +8,7 @@ const NewsletterSignup = dynamic(() => import('@/components/home/NewsletterSignu
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-900">
+    <main className="min-h-screen bg-background">
       <HeroSection />
       <FeaturedProducts />
       <CategoriesShowcase />

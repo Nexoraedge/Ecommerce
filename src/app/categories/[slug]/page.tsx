@@ -1,9 +1,11 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { getCategoryBySlug, getSubcategories } from '@/lib/categories';
 import { products } from '@/lib/products';
 import ProductGrid from '@/components/product/ProductGrid';
+import RelatedProducts from '@/components/product/RelatedProducts';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -12,9 +14,22 @@ export default function CategoryPage() {
   const params = useParams();
   const category = getCategoryBySlug(params.slug as string);
   const subcategories = category ? getSubcategories(category.id) : [];
-  const categoryProducts = products.filter(
-    (product) => product.category === category?.id || subcategories.some(sub => product.category === sub.id)
-  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [categoryProducts, setCategoryProducts] = useState<typeof products>([]);
+  
+  useEffect(() => {
+    setIsLoading(true);
+    // Simulate API call delay
+    const timer = setTimeout(() => {
+      const filteredProducts = products.filter(
+        (product) => product.category === category?.id || subcategories.some(sub => product.category === sub.id)
+      );
+      setCategoryProducts(filteredProducts);
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [category, subcategories]);
 
   if (!category) {
     return <div>Category not found</div>;
@@ -76,8 +91,19 @@ export default function CategoryPage() {
         <h2 className="text-2xl font-bold mb-6">
           {category.name} Products ({categoryProducts.length})
         </h2>
-        <ProductGrid products={categoryProducts} />
+        <ProductGrid products={categoryProducts} isLoading={isLoading} />
       </div>
+      
+      {/* Related Products from other categories */}
+      {!isLoading && categoryProducts.length > 0 && (
+        <div className="mt-16">
+          <RelatedProducts 
+            category={category.id !== 'all' ? category.id : undefined} 
+            title="You might also like" 
+            viewAllLink="/products" 
+          />
+        </div>
+      )}
     </div>
   );
 }

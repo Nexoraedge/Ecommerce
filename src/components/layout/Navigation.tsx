@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavigationProps {
   mobile?: boolean;
@@ -17,14 +17,14 @@ const getNavigationItems = (isAuthenticated: boolean) => [
   { name: 'Sale', href: '/sale' },
   ...(isAuthenticated
     ? [
-        { name: 'My Orders', href: '/dashboard/orders' },
-        { name: 'Wishlist', href: '/dashboard/wishlist' },
+        { name: 'My Orders', href: '/orders' },
+        { name: 'Wishlist', href: '/wishlist' },
       ]
     : []),
 ];
 
 export default function Navigation({ mobile, onClose }: NavigationProps) {
-  const { data: session } = useSession();
+  const { user } = useAuth();
   const containerClasses = mobile
     ? 'flex flex-col py-4 space-y-2'
     : 'flex items-center space-x-8';
@@ -43,9 +43,11 @@ export default function Navigation({ mobile, onClose }: NavigationProps) {
     whileHover: { width: '100%' },
   };
 
+  const navigationItems = getNavigationItems(!!user);
+  
   return (
     <nav className={containerClasses}>
-      {getNavigationItems(!!session).map((item) => (
+      {navigationItems.map((item) => (
         <motion.div key={item.name} {...linkMotion}>
           <Link
             href={item.href}

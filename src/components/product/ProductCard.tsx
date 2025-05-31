@@ -72,9 +72,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                     e.preventDefault();
                     handleAddToCart();
                   }}
-                  className="p-3 bg-background dark:bg-card rounded-full shadow-lg hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="p-3 bg-background dark:bg-card rounded-full shadow-xl hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
-                  <ShoppingCart className="h-5 w-5" />
+                  <ShoppingCart className="h-5 text-white w-5" />
                 </motion.button>
                 {/* Wishlist Button */}
                 <div className="p-0">
@@ -117,7 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <motion.button
           onClick={handleAddToCart}
           disabled={isAdding}
-          className="mt-4 w-full py-2 px-4 bg-primary hover:opacity-90 text-primary-foreground rounded-md font-medium transition-opacity flex items-center justify-center"
+          className="mt-4 gap-x-1.5 w-full py-2 px-4 bg-primary hover:opacity-90 text-primary-foreground rounded-md font-medium transition-opacity flex items-center justify-center"
         >
           <AnimatePresence mode="wait">
             {isAdding ? (

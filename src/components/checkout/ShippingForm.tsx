@@ -40,7 +40,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
         <div>
           <label
             htmlFor="firstName"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-foreground"
           >
             First name
           </label>
@@ -48,7 +48,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
             type="text"
             id="firstName"
             {...register('firstName')}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+            placeholder="Enter your first name" className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
               errors.firstName ? 'border-red-500' : ''
             }`}
           />
@@ -60,7 +60,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
         <div>
           <label
             htmlFor="lastName"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-foreground"
           >
             Last name
           </label>
@@ -68,7 +68,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
             type="text"
             id="lastName"
             {...register('lastName')}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+            placeholder="Enter your first name" className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
               errors.lastName ? 'border-red-500' : ''
             }`}
           />
@@ -80,7 +80,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-foreground"
           >
             Email
           </label>
@@ -88,7 +88,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
             type="email"
             id="email"
             {...register('email')}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+            placeholder="Enter your first name" className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
               errors.email ? 'border-red-500' : ''
             }`}
           />
@@ -100,7 +100,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
         <div>
           <label
             htmlFor="phone"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-foreground"
           >
             Phone
           </label>
@@ -108,7 +108,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
             type="tel"
             id="phone"
             {...register('phone')}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+            placeholder="Enter your first name" className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
               errors.phone ? 'border-red-500' : ''
             }`}
           />
@@ -121,7 +121,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
       <div>
         <label
           htmlFor="address"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground"
         >
           Address
         </label>
@@ -129,7 +129,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
           type="text"
           id="address"
           {...register('address')}
-          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+          placeholder="Enter your first name" className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
             errors.address ? 'border-red-500' : ''
           }`}
         />
@@ -141,7 +141,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
       <div>
         <label
           htmlFor="apartment"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground"
         >
           Apartment, suite, etc. (optional)
         </label>
@@ -149,7 +149,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
           type="text"
           id="apartment"
           {...register('apartment')}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          placeholder="Apartment, suite, etc. (optional)" className="mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60"
         />
       </div>
 
@@ -157,7 +157,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
         <div>
           <label
             htmlFor="city"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-foreground"
           >
             City
           </label>
@@ -165,7 +165,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
             type="text"
             id="city"
             {...register('city')}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+            placeholder="Enter your first name" className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
               errors.city ? 'border-red-500' : ''
             }`}
           />
@@ -177,7 +177,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
         <div>
           <label
             htmlFor="state"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-foreground"
           >
             State
           </label>
@@ -185,7 +185,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
             type="text"
             id="state"
             {...register('state')}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+            placeholder="Enter your first name" className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
               errors.state ? 'border-red-500' : ''
             }`}
           />
@@ -197,7 +197,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
         <div>
           <label
             htmlFor="zipCode"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-foreground"
           >
             ZIP Code
           </label>
@@ -205,7 +205,7 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
             type="text"
             id="zipCode"
             {...register('zipCode')}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+            placeholder="Enter your first name" className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
               errors.zipCode ? 'border-red-500' : ''
             }`}
           />
@@ -218,18 +218,25 @@ export default function ShippingForm({ onSubmit }: ShippingFormProps) {
       <div>
         <label
           htmlFor="country"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground"
         >
           Country
         </label>
         <select
           id="country"
           {...register('country')}
-          className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
+          className={`mt-1 block w-full rounded-md border border-border bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm placeholder:text-muted-foreground/60 ${
             errors.country ? 'border-red-500' : ''
           }`}
         >
           <option value="">Select a country</option>
+          <option value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="UK">United Kingdom</option>
+          <option value="AU">Australia</option>
+          <option value="IN">India</option>
+          <option value="DE">Germany</option>
+          <option value="FR">France</option>
           <option value="US">United States</option>
           <option value="CA">Canada</option>
           <option value="GB">United Kingdom</option>

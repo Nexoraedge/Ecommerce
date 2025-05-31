@@ -8,43 +8,40 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/ui/icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import supabase from '@/lib/supabase';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Phone } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Provider } from '@supabase/supabase-js';
 
 export function SignUpForm() {
   const router = useRouter();
+  const { signInWithPhone, signInWithSocialProvider, verifyOtp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const [phone, setPhone] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  // Handle phone number submission to send OTP
+  async function handlePhoneSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        throw error;
+      // Format phone number to E.164 format if not already formatted
+      let formattedPhone = phone;
+      if (!phone.startsWith('+')) {
+        formattedPhone = `+${phone}`;
       }
 
-      router.push('/auth/verify-email');
+      const { error, message } = await signInWithPhone(formattedPhone);
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      setOtpSent(true);
+      setPhone(formattedPhone); // Store the formatted phone number
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -52,102 +49,217 @@ export function SignUpForm() {
     }
   }
 
+  // Handle OTP verification
+  async function handleOtpSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await verifyOtp(phone, otp);
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      if (data?.user && data?.session) {
+        router.push('/');
+        router.refresh();
+      } else {
+        throw new Error('Failed to verify OTP. Please try again.');
+      }
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // Handle social provider sign in
+  async function handleSocialSignIn(provider: Provider) {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await signInWithSocialProvider(provider);
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      // The user will be redirected to the provider's login page
+    } catch (error: any) {
+      setError(error.message);
+      setIsLoading(false);
+    }
+  }
+
+  // If OTP has been sent, show the OTP verification form
+  if (otpSent) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full space-y-6 rounded-lg border border-border bg-card p-6 shadow-lg"
+      >
+        <div className="space-y-2 text-center">
+          <h2 className="text-2xl font-semibold">Verify your phone</h2>
+          <p className="text-sm text-muted-foreground">
+            We've sent a verification code to {phone}.
+            Please enter it below.
+          </p>
+        </div>
+        <form onSubmit={handleOtpSubmit}>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="otp">Verification Code</Label>
+              <Input
+                id="otp"
+                placeholder="123456"
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                autoCapitalize="none"
+                autoComplete="one-time-code"
+                autoCorrect="off"
+                disabled={isLoading}
+                required
+              />
+            </div>
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              Verify Code
+            </Button>
+            <Button
+              className="w-full"
+              variant="outline"
+              type="button"
+              onClick={() => {
+                setOtpSent(false);
+                setOtp('');
+              }}
+              disabled={isLoading}
+            >
+              Back to Sign Up
+            </Button>
+          </div>
+        </form>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full space-y-6 rounded-lg border bg-card p-6 shadow-lg backdrop-blur-lg"
+      className="w-full space-y-6 rounded-lg border border-border bg-card p-6 shadow-lg"
     >
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
+        <h2 className="text-2xl font-semibold">Create an account</h2>
         <p className="text-sm text-muted-foreground">
-          Enter your email below to create your account
+          Enter your phone number or use a social provider to sign up
         </p>
       </div>
-      <form onSubmit={onSubmit}>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              placeholder="m@example.com"
-              type="email"
-              name="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
+      
+      <Tabs defaultValue="phone" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="phone">
+            <Phone className="mr-2 h-4 w-4" />
+            Phone
+          </TabsTrigger>
+          <TabsTrigger value="social">
+            <Icons.google className="mr-2 h-4 w-4" />
+            Social
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="phone" className="space-y-4">
+          <form onSubmit={handlePhoneSubmit}>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  placeholder="+1234567890"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  autoCapitalize="none"
+                  autoComplete="tel"
+                  autoCorrect="off"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <Button
+                className="w-full"
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Send Verification Code
+              </Button>
+            </div>
+          </form>
+        </TabsContent>
+        
+        <TabsContent value="social" className="space-y-4">
+          <div className="grid gap-2">
+            <Button
+              className="w-full"
+              variant="outline"
+              type="button"
+              onClick={() => handleSocialSignIn('google')}
               disabled={isLoading}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              name="password"
-              autoComplete="new-password"
+            >
+              {isLoading ? (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Icons.google className="mr-2 h-4 w-4" />
+              )}
+              Continue with Google
+            </Button>
+            <Button
+              className="w-full"
+              variant="outline"
+              type="button"
+              onClick={() => handleSocialSignIn('apple')}
               disabled={isLoading}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              name="confirmPassword"
-              autoComplete="new-password"
-              disabled={isLoading}
-              required
-            />
+            >
+              {isLoading ? (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Icons.apple className="mr-2 h-4 w-4" />
+              )}
+              Continue with Apple
+            </Button>
           </div>
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          <Button className="w-full" type="submit" disabled={isLoading}>
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Sign Up
-          </Button>
-        </div>
-      </form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      <Button
-        variant="outline"
-        type="button"
-        className="w-full"
-        onClick={() => {
-          setIsLoading(true);
-          supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-              redirectTo: `${window.location.origin}/auth/callback`,
-            },
-          });
-        }}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Icons.google className="mr-2 h-4 w-4" />
-        )}
-        Google
-      </Button>
+        </TabsContent>
+      </Tabs>
     </motion.div>
   );
 }

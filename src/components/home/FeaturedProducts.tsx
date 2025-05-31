@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, Star, X, Eye, ChevronRight, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, Heart, Star, X, Eye, ChevronRight, ArrowLeft, Check } from 'lucide-react';
 import Link from 'next/link';
-import useAuth from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
+import useCart from '@/hooks/useCart';
 
 interface Product {
   id: string;
@@ -29,9 +30,9 @@ interface SimilarProduct {
 const dummyProducts: Product[] = [
   {
     id: '1',
-    name: 'Classic White Tee',
+    name: 'Classic White T-Shirt',
     price: 29.99,
-    image: '/products/white-tee.jpg',
+    image: '/products/whitetee.png',
     category: 'Men',
     rating: 4.5,
     description: 'A comfortable and versatile white t-shirt made from 100% organic cotton.',
@@ -43,7 +44,7 @@ const dummyProducts: Product[] = [
     name: 'Summer Floral Dress',
     price: 89.99,
     salePrice: 69.99,
-    image: '/products/floral-dress.jpg',
+    image: '/products/summerflora.png',
     category: 'Women',
     rating: 4.8,
     description: 'A beautiful floral dress perfect for summer days and special occasions.',
@@ -54,7 +55,7 @@ const dummyProducts: Product[] = [
     id: '3',
     name: 'Denim Jacket',
     price: 129.99,
-    image: '/products/denim-jacket.jpg',
+    image: '/products/denimjacket.png',
     category: 'Unisex',
     rating: 4.3,
     description: 'A classic denim jacket that never goes out of style. Perfect for layering.',
@@ -66,7 +67,7 @@ const dummyProducts: Product[] = [
     name: 'Athletic Sneakers',
     price: 119.99,
     salePrice: 99.99,
-    image: '/products/sneakers.jpg',
+    image: '/products/althleticsneker.png',
     category: 'Shoes',
     rating: 4.7,
     description: 'Comfortable and stylish sneakers for your active lifestyle.',
@@ -78,29 +79,30 @@ const dummyProducts: Product[] = [
 // Similar products suggestions
 const similarProductsMap: Record<string, SimilarProduct[]> = {
   '1': [
-    { id: '101', name: 'Premium Cotton Tee', price: 34.99, image: '/products/premium-tee.jpg' },
-    { id: '102', name: 'V-Neck T-Shirt', price: 24.99, image: '/products/vneck-tee.jpg' },
-    { id: '103', name: 'Long Sleeve Tee', price: 39.99, image: '/products/longsleeve-tee.jpg' }
+    { id: '101', name: 'Premium Cotton Tee', price: 34.99, image: '/products/premiumtee.png' },
+    { id: '102', name: 'V-Neck T-Shirt', price: 24.99, image: '/products/vnecktee.png' },
+    { id: '103', name: 'Long Sleeve Tee', price: 39.99, image: '/products/longsleevetee.png' }
   ],
   '2': [
-    { id: '201', name: 'Maxi Dress', price: 79.99, image: '/products/maxi-dress.jpg' },
-    { id: '202', name: 'Casual Sundress', price: 59.99, image: '/products/sundress.jpg' },
-    { id: '203', name: 'Evening Gown', price: 149.99, image: '/products/evening-gown.jpg' }
+    { id: '201', name: 'Maxi Dress', price: 79.99, image: '/products/maxidress.png' },
+    { id: '202', name: 'Casual Sundress', price: 59.99, image: '/products/casualsundress.png' },
+    { id: '203', name: 'Evening Gown', price: 149.99, image: '/products/eveninggown.png' }
   ],
   '3': [
-    { id: '301', name: 'Leather Jacket', price: 199.99, image: '/products/leather-jacket.jpg' },
-    { id: '302', name: 'Bomber Jacket', price: 89.99, image: '/products/bomber-jacket.jpg' },
-    { id: '303', name: 'Windbreaker', price: 69.99, image: '/products/windbreaker.jpg' }
+    { id: '301', name: 'Leather Jacket', price: 199.99, image: '/products/leatherjacket.png' },
+    { id: '302', name: 'Bomber Jacket', price: 89.99, image: '/products/bomberjacket.png' },
+    { id: '303', name: 'Windbreaker', price: 69.99, image: '/products/windbreaker.png' }
   ],
   '4': [
-    { id: '401', name: 'Running Shoes', price: 129.99, image: '/products/running-shoes.jpg' },
-    { id: '402', name: 'Casual Loafers', price: 79.99, image: '/products/loafers.jpg' },
-    { id: '403', name: 'Hiking Boots', price: 149.99, image: '/products/hiking-boots.jpg' }
+    { id: '401', name: 'Running Shoes', price: 129.99, image: '/products/runningshoes.png' },
+    { id: '402', name: 'Casual Loafers', price: 79.99, image: '/products/loafers.png' },
+    { id: '403', name: 'Hiking Boots', price: 149.99, image: '/products/hikingboots.png' }
   ]
 };
 
 export default function FeaturedProducts() {
   const { user } = useAuth();
+  const { addItem, toggleCart } = useCart();
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -109,6 +111,7 @@ export default function FeaturedProducts() {
   const [viewedProducts, setViewedProducts] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [addedToCart, setAddedToCart] = useState<boolean>(false);
 
   const openProductQuickView = (product: Product) => {
     setSelectedProduct(product);
@@ -184,7 +187,7 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <section className="py-12 bg-muted/30 dark:bg-gray-900/80">
+    <section className="py-12 bg-background dark:bg-background/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Recently viewed products - Only show if there are items */}
         {recentlyViewed.length > 0 && (
@@ -202,7 +205,7 @@ export default function FeaturedProducts() {
               {recentlyViewed.map((product) => (
                 <div 
                   key={`recent-${product.id}`} 
-                  className="bg-card dark:bg-card/90 rounded-lg overflow-hidden border border-border cursor-pointer hover:shadow-md transition-shadow"
+                  className="bg-card rounded-lg overflow-hidden border border-border cursor-pointer hover:shadow-md transition-shadow"
                   onClick={() => openProductQuickView(product)}
                 >
                   <div className="aspect-[4/3] relative">
@@ -261,7 +264,7 @@ export default function FeaturedProducts() {
               transition={{ delay: index * 0.1 }}
               onHoverStart={() => setHoveredProduct(product.id)}
               onHoverEnd={() => setHoveredProduct(null)}
-              className="group relative bg-card dark:bg-card/90 rounded-lg shadow-sm border border-border overflow-hidden hover:shadow-md transition-all duration-300"
+              className="group relative bg-card rounded-lg shadow-sm border border-border overflow-hidden hover:shadow-md transition-all duration-300"
             >
               {/* Sale Badge */}
               {product.salePrice && (
@@ -292,30 +295,42 @@ export default function FeaturedProducts() {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-3 bg-white rounded-full shadow-lg"
+                    className="p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg"
                     aria-label="Add to cart"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addItem({
+                        id: product.id,
+                        name: product.name,
+                        price: product.salePrice || product.price,
+                        quantity: 1,
+                        image: product.image,
+                        maxQuantity: 10
+                      });
+                      toggleCart();
+                    }}
                   >
-                    <ShoppingCart className="h-4 w-4" />
+                    <ShoppingCart className="h-4 w-4 text-gray-800 dark:text-white" />
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-3 bg-white rounded-full shadow-lg"
+                    className="p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg"
                     onClick={(e) => {
                       e.stopPropagation();
                       openProductQuickView(product);
                     }}
                     aria-label="Quick view"
                   >
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4 text-gray-800 dark:text-white" />
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-3 bg-white rounded-full shadow-lg"
+                    className="p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg"
                     aria-label="Add to wishlist"
                   >
-                    <Heart className="h-4 w-4" />
+                    <Heart className="h-4 w-4 text-gray-800 dark:text-white" />
                   </motion.button>
                 </motion.div>
               </div>
@@ -370,7 +385,7 @@ export default function FeaturedProducts() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto max-h-screen"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm scrollbardcus overflow-y-auto max-h-screen"
               onClick={closeProductQuickView}
             >
               <motion.div
@@ -378,7 +393,7 @@ export default function FeaturedProducts() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: 'spring', damping: 20 }}
-                className="bg-card dark:bg-card/95 max-w-5xl w-full rounded-xl shadow-xl border border-border max-h-[90vh] overflow-y-auto"
+                className="bg-card dark:bg-card/95 max-w-5xl w-full rounded-l-xl shadow-xl border border-border/50 max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Back button at the top */}
@@ -447,13 +462,18 @@ export default function FeaturedProducts() {
                     {/* Color Selection */}
                     {selectedProduct.colors && selectedProduct.colors.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="text-sm font-medium mb-2">Color</h4>
+                        <div className="flex justify-between items-center mb-2">
+                          <h4 className="text-sm font-medium">Color</h4>
+                          {!selectedColor && (
+                            <span className="text-xs text-red-500 dark:text-red-400">Please select a color</span>
+                          )}
+                        </div>
                         <div className="flex space-x-2">
                           {selectedProduct.colors.map((color) => (
                             <button
                               key={color}
                               onClick={() => setSelectedColor(color)}
-                              className={`w-8 h-8 rounded-full border-2 ${selectedColor === color ? 'border-primary' : 'border-transparent'}`}
+                              className={`w-8 h-8 rounded-full border-2 ${selectedColor === color ? 'border-primary' : 'border-transparent hover:border-primary/50'}`}
                               style={{ backgroundColor: color.toLowerCase() }}
                               aria-label={`Select ${color} color`}
                             />
@@ -465,13 +485,18 @@ export default function FeaturedProducts() {
                     {/* Size Selection */}
                     {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
                       <div className="mb-6">
-                        <h4 className="text-sm font-medium mb-2">Size</h4>
+                        <div className="flex justify-between items-center mb-2">
+                          <h4 className="text-sm font-medium">Size</h4>
+                          {!selectedSize && (
+                            <span className="text-xs text-red-500 dark:text-red-400">Please select a size</span>
+                          )}
+                        </div>
                         <div className="flex flex-wrap gap-2">
                           {selectedProduct.sizes.map((size) => (
                             <button
                               key={size}
                               onClick={() => setSelectedSize(size)}
-                              className={`px-3 py-1 border rounded-md text-sm ${selectedSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-border text-foreground'}`}
+                              className={`px-3 py-1 border rounded-md text-sm ${selectedSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-border text-foreground hover:border-primary/50'}`}
                             >
                               {size}
                             </button>
@@ -514,28 +539,63 @@ export default function FeaturedProducts() {
                       <button 
                         onClick={() => {
                           if (!selectedSize || !selectedColor) {
-                            alert('Please select a size and color');
+                            // Show validation message in UI instead of alert
                             return;
                           }
                           // Add to cart logic here
-                          alert('Item added to cart');
+                          addItem({
+                            id: selectedProduct.id,
+                            name: selectedProduct.name,
+                            price: selectedProduct.salePrice || selectedProduct.price,
+                            quantity: quantity,
+                            image: selectedProduct.image,
+                            size: selectedSize,
+                            color: selectedColor,
+                            maxQuantity: 10
+                          });
+                          setAddedToCart(true);
+                          setTimeout(() => setAddedToCart(false), 2000);
                         }}
-                        disabled={!selectedSize || !selectedColor}
+                        disabled={!selectedSize || !selectedColor || addedToCart}
                         className="flex-1 bg-primary text-primary-foreground py-3 rounded-md font-medium hover:opacity-90 transition-opacity flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        Add to Cart
+                        {addedToCart ? (
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            Added to Cart
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            Add to Cart
+                          </>
+                        )}
                       </button>
                       <button 
                         onClick={() => {
                           if (!selectedSize || !selectedColor) {
-                            alert('Please select a size and color');
+                            // Show validation message in UI instead of alert
                             return;
                           }
                           // Buy now logic
-                          alert('Proceeding to checkout');
+                          addItem({
+                            id: selectedProduct.id,
+                            name: selectedProduct.name,
+                            price: selectedProduct.salePrice || selectedProduct.price,
+                            quantity: quantity,
+                            image: selectedProduct.image,
+                            size: selectedSize,
+                            color: selectedColor,
+                            maxQuantity: 10
+                          });
+                          // Close modal and redirect to checkout
+                          closeProductQuickView();
+                          // Use setTimeout to allow the modal to close before redirecting
+                          setTimeout(() => {
+                            window.location.href = '/checkout';
+                          }, 300);
                         }}
-                        disabled={!selectedSize || !selectedColor}
+                        disabled={!selectedSize || !selectedColor || addedToCart}
                         className="flex-1 bg-orange-500 dark:bg-orange-600 text-white py-3 rounded-md font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Buy Now
@@ -600,7 +660,7 @@ export default function FeaturedProducts() {
                                 }, 300);
                               }}
                             >
-                              <div className="aspect-square overflow-hidden">
+                              <div className="aspect-square h-[200px] overflow-hidden">
                                 <img 
                                   src={product.image} 
                                   alt={product.name} 
@@ -642,35 +702,35 @@ export default function FeaturedProducts() {
         <div className="mt-16">
           <h2 className="text-2xl font-bold mb-6 text-foreground">Shop by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/categories/men-clothing" className="group relative overflow-hidden rounded-lg aspect-[3/2]">
+            <Link href="/categories/men/clothing/" className="group relative overflow-hidden rounded-lg aspect-[3/2]">
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-              <img src="/categories/men.jpg" alt="Men's Fashion" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src="/categories/men/main.png" alt="Men's Fashion" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
                 <h3 className="text-white font-bold text-lg">Men's Fashion</h3>
                 <p className="text-white/80 text-sm">Shop Now</p>
               </div>
             </Link>
-            <Link href="/categories/women-clothing" className="group relative overflow-hidden rounded-lg aspect-[3/2]">
+            <Link href="/categories/women" className="group relative overflow-hidden rounded-lg aspect-[3/2]">
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-              <img src="/categories/women.jpg" alt="Women's Fashion" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src="/categories/women/main.png" alt="Women's Fashion" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
                 <h3 className="text-white font-bold text-lg">Women's Fashion</h3>
                 <p className="text-white/80 text-sm">Shop Now</p>
               </div>
             </Link>
-            <Link href="/categories/electronics" className="group relative overflow-hidden rounded-lg aspect-[3/2]">
+            <Link href="/categories/kids" className="group relative overflow-hidden rounded-lg aspect-[3/2]">
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-              <img src="/categories/electronics.jpg" alt="Electronics" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src="/categories/kids/main.png" alt="Kids" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
-                <h3 className="text-white font-bold text-lg">Electronics</h3>
+                <h3 className="text-white font-bold text-lg">Kids</h3>
                 <p className="text-white/80 text-sm">Shop Now</p>
               </div>
             </Link>
-            <Link href="/categories/home" className="group relative overflow-hidden rounded-lg aspect-[3/2]">
+            <Link href="/categories/kids/babies" className="group relative overflow-hidden rounded-lg aspect-[3/2]">
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-              <img src="/categories/home.jpg" alt="Home & Living" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src="/categories/kids/babies/main.png" alt="Babies" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
-                <h3 className="text-white font-bold text-lg">Home & Living</h3>
+                <h3 className="text-white font-bold text-lg">Babies</h3>
                 <p className="text-white/80 text-sm">Shop Now</p>
               </div>
             </Link>

@@ -26,12 +26,12 @@ export default function NewsletterSignup() {
   return (
     <section className="relative py-20 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background to-background/90 dark:from-background dark:to-background/90 -z-10" />
       
       {/* Decorative elements */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-purple-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/2 right-1/4 w-64 h-64 bg-pink-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-background/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/2 right-1/4 w-64 h-64 bg-background/10 rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,7 +39,7 @@ export default function NewsletterSignup() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-xl"
+          className="relative bg-card/90 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-xl border-[2px] border-border"
         >
           <div className="max-w-2xl mx-auto text-center">
             <motion.h2
@@ -56,7 +56,7 @@ export default function NewsletterSignup() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-gray-600 dark:text-gray-400 mb-8"
+              className="text-muted-foreground mb-8"
             >
               Subscribe to our newsletter for exclusive offers, new arrivals, and fashion tips.
             </motion.p>
@@ -67,7 +67,7 @@ export default function NewsletterSignup() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="w-full px-6 py-4 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+                className="w-full px-6 py-4 rounded-full bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary shadow-sm placeholder:text-muted-foreground/60"
                 disabled={status === 'loading' || status === 'success'}
               />
               
@@ -76,7 +76,7 @@ export default function NewsletterSignup() {
                 whileTap={{ scale: 0.95 }}
                 type="submit"
                 disabled={status === 'loading' || status === 'success'}
-                className="absolute right-2 top-2 px-4 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                className="absolute right-2 top-2 px-4 py-2 bg-primary text-primary-foreground rounded-full hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 <AnimatePresence mode="wait">
                   {status === 'idle' && (

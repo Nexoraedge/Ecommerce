@@ -19,30 +19,30 @@ interface CarouselItem {
 const carouselItems: CarouselItem[] = [
   {
     id: 1,
-    image: '/banners/banner-1.jpg',
+    image: '/banners/summer_sale.png',
     title: 'Summer Collection',
     subtitle: 'Up to 50% off on selected items',
     buttonText: 'Shop Now',
     buttonLink: '/products?category=summer',
-    color: 'from-blue-600 to-purple-600',
+    color: 'from-sky-400/40 to-transparent',
   },
   {
     id: 2,
-    image: '/banners/banner-2.jpg',
+    image: '/banners/new_arrivals.png',
     title: 'New Arrivals',
     subtitle: 'Check out the latest fashion trends',
     buttonText: 'Explore',
     buttonLink: '/products?category=new-arrivals',
-    color: 'from-pink-600 to-orange-600',
+    color: 'from-amber-400/40 to-transparent',
   },
   {
     id: 3,
-    image: '/banners/banner-3.jpg',
+    image: '/banners/trending_fashion.png',
     title: 'Exclusive Deals',
     subtitle: 'Limited time offers on premium brands',
     buttonText: 'View Deals',
     buttonLink: '/products?category=deals',
-    color: 'from-green-600 to-teal-600',
+    color: 'from-zinc-800/50 to-transparent',
   },
 ];
 
@@ -80,99 +80,103 @@ export default function HeroSection() {
     <section className="bg-background">
 
       {/* Main carousel */}
-      <div className="relative overflow-hidden">
-        <div className="relative h-[300px] md:h-[400px] lg:h-[500px] overflow-hidden">
+      <div className="relative overflow-hidden rounded-xl shadow-xl mx-4 my-4">
+        <div className="relative h-[350px] md:h-[450px] lg:h-[550px] overflow-hidden">
           {/* Carousel navigation */}
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 z-10 -translate-y-1/2 bg-background/80 dark:bg-background/40 p-2 rounded-full shadow-lg hover:bg-background transition-colors"
+            className="absolute left-4 top-1/2 z-10 -translate-y-1/2 bg-background/30 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-background/50 transition-all transform hover:scale-105 active:scale-95"
             aria-label="Previous slide"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-6 h-6 text-white dark:text-black drop-shadow-md" />
           </button>
           
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 bg-background/80 dark:bg-background/40 p-2 rounded-full shadow-lg hover:bg-background transition-colors"
+            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 bg-background/30 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-background/50 transition-all transform hover:scale-105 active:scale-95"
             aria-label="Next slide"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-6 h-6 text-white dark:text-black drop-shadow-md" />
           </button>
 
           {/* Carousel slides */}
           <AnimatePresence mode="wait">
-            {carouselItems.map((item, index) => (
+            {carouselItems.map(({id, image, title, subtitle, buttonText, buttonLink, color}, index) => (
               index === current && (
                 <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
+                  key={id}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.7, ease: 'easeInOut' }}
                   className="absolute inset-0"
                 >
                   {/* Background image with gradient overlay */}
                   <div className="absolute inset-0 z-0">
-                    <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-80 dark:opacity-90`} />
+                    <div className={`absolute inset-0 bg-gradient-to-r ${color}`} />
                     <Image
-                      src={item.image}
-                      alt={item.title}
+                      src={image}
+                      alt={title}
                       fill
                       className="object-cover"
                       priority
                     />
                   </div>
 
-                  {/* Content */}
+                  {/* Content
                   <div className="relative z-10 h-full flex items-center">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 w-full">
                       <div className="max-w-lg">
                         <motion.h2
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 }}
-                          className="text-3xl md:text-5xl font-bold text-white mb-3"
+                          transition={{ delay: 0.3, duration: 0.5 }}
+                          className="text-4xl md:text-6xl font-bold mb-3 text-white drop-shadow-lg"
                         >
-                          {item.title}
+                          {title}
                         </motion.h2>
                         
                         <motion.p
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.3 }}
-                          className="text-lg text-white/90 mb-6"
+                          transition={{ delay: 0.4, duration: 0.5 }}
+                          className="text-xl text-white mb-6 drop-shadow-md max-w-md"
                         >
-                          {item.subtitle}
+                          {subtitle}
                         </motion.p>
-                        
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 }}
-                        >
-                          <Link
-                            href={item.buttonLink}
-                            className="inline-flex items-center px-6 py-3 rounded-md bg-white text-primary font-medium shadow-lg hover:shadow-xl transition-all"
-                          >
-                            {item.buttonText}
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                          </Link>
-                        </motion.div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </motion.div>
               )
             ))}
           </AnimatePresence>
 
+          {/* Floating Explore button */}
+          <motion.div 
+            className="absolute bottom-10 left-0 right-0 z-20 flex justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Link
+              href="/products"
+              className="px-8 py-3 rounded-full bg-white text-zinc-800 font-medium shadow-xl hover:shadow-2xl transition-all flex items-center space-x-2"
+            >
+              <span>Explore</span>
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </motion.div>
+          
           {/* Carousel indicators */}
-          <div className="absolute bottom-4 left-0 right-0 z-10 flex justify-center space-x-2">
+          <div className="absolute bottom-4 left-0 right-0 z-10 flex justify-center space-x-3">
             {carouselItems.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrent(index)}
-                className={`w-2.5 h-2.5 rounded-full transition-colors ${index === current ? 'bg-white' : 'bg-white/50'}`}
+                className={`w-2 h-2 rounded-full transition-all transform ${index === current ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'}`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
@@ -181,9 +185,10 @@ export default function HeroSection() {
       </div>
 
       {/* Special offers section */}
-      <div className="bg-muted/50 dark:bg-muted/20 py-6 px-4">
+      <div className="bg-muted/50 dark:bg-muted/20 py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h2 className="text-2xl font-bold mb-6 text-center">Why Shop With Us</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-card p-4 rounded-lg border border-border flex items-center">
               <div className="p-3 bg-primary/10 rounded-full mr-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">

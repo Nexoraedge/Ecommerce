@@ -1,10 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, X, User, LogOut } from "lucide-react"
 import Link from "next/link"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function MobileNav() {
+  const { user, signOut, getUserInitials } = useAuth()
   const [isOpen, setIsOpen] = React.useState(false)
 
   const toggleMenu = () => {
@@ -89,14 +91,71 @@ export default function MobileNav() {
               </Link>
             </nav>
 
-            <div className="mt-auto">
-              <Link
-                href="/auth/login"
-                onClick={toggleMenu}
-                className="block w-full py-3 text-center bg-primary text-primary-foreground rounded-md font-medium"
-              >
-                Sign In
-              </Link>
+            <div className="mt-auto space-y-4">
+              {user ? (
+                <>
+                  <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-md">
+                    <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium overflow-hidden">
+                      {user.user_metadata?.avatar_url ? (
+                        <img 
+                          src={user.user_metadata.avatar_url} 
+                          alt="User avatar" 
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span>{getUserInitials()}</span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">
+                        {user.user_metadata?.full_name || user.user_metadata?.name || user.email}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Link
+                      href="/account"
+                      onClick={toggleMenu}
+                      className="flex items-center space-x-2 w-full p-3 bg-muted/30 rounded-md"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>My Account</span>
+                    </Link>
+                    
+                    <button
+                      onClick={() => {
+                        signOut()
+                        toggleMenu()
+                      }}
+                      className="flex items-center space-x-2 w-full p-3 bg-muted/30 rounded-md text-red-600 dark:text-red-400"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/signin"
+                    onClick={toggleMenu}
+                    className="block w-full py-3 text-center bg-primary text-primary-foreground rounded-md font-medium"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    onClick={toggleMenu}
+                    className="block w-full py-3 text-center bg-muted border border-border rounded-md font-medium"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

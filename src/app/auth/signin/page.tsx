@@ -20,14 +20,6 @@ export default function SignInPage() {
             Don&apos;t have an account? Sign Up
           </Link>
         </p>
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          <Link
-            href="/auth/reset-password"
-            className="hover:text-brand underline underline-offset-4"
-          >
-            Forgot your password?
-          </Link>
-        </p>
       </div>
     </div>
   );

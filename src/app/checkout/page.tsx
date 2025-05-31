@@ -46,10 +46,10 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-background py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto lg:max-w-none">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-8">Checkout</h1>
 
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start xl:gap-x-16">
             <div className="lg:col-span-7">
@@ -60,8 +60,8 @@ export default function CheckoutPage() {
 
               {/* Shipping form */}
               {currentStep === 1 && (
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-medium text-gray-900 mb-6">
+                <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                  <h2 className="text-lg font-medium text-foreground mb-6">
                     Shipping Information
                   </h2>
                   <ShippingForm onSubmit={handleShippingSubmit} />
@@ -70,11 +70,11 @@ export default function CheckoutPage() {
 
               {/* Payment form would go here */}
               {currentStep === 2 && (
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-medium text-gray-900 mb-6">
+                <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                  <h2 className="text-lg font-medium text-foreground mb-6">
                     Payment Method
                   </h2>
-                  <p className="text-gray-500">
+                  <p className="text-muted-foreground">
                     Payment integration would go here (e.g., Stripe)
                   </p>
                 </div>

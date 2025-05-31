@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { ShoppingCart, User, Search, Menu, X, Sun, Moon, LogOut } from 'lucide-react';
-import { useSession, signIn, signOut } from 'next-auth/react';
 import Navigation from './Navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,7 +14,7 @@ export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { data: session } = useSession();
+  const { user, signOut, getUserInitials } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -24,6 +24,11 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Debug authentication state
+  useEffect(() => {
+    console.log('Header - User state:', user);
+  }, [user]);
 
   const headerClasses = `
     fixed top-0 w-full z-50 transition-all duration-300
@@ -93,13 +98,19 @@ export default function Header() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={() => session ? setIsUserMenuOpen(!isUserMenuOpen) : signIn()}
+                onClick={() => user ? setIsUserMenuOpen(!isUserMenuOpen) : window.location.href = '/auth/signin'}
               >
-                <User className="h-5 w-5" />
+                {user ? (
+                  <div className="h-5 w-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs font-medium">
+                    {getUserInitials()}
+                  </div>
+                ) : (
+                  <User className="h-5 w-5" />
+                )}
               </motion.button>
 
               <AnimatePresence>
-                {isUserMenuOpen && session && (
+                {isUserMenuOpen && user && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -107,24 +118,24 @@ export default function Header() {
                     className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5"
                   >
                     <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b dark:border-gray-700">
-                      {session.user?.email}
+                      {user?.email}
                     </div>
                     <Link
-                      href="/dashboard"
+                      href="/"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       Dashboard
                     </Link>
                     <Link
-                      href="/dashboard/orders"
+                      href="/orders"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       My Orders
                     </Link>
                     <Link
-                      href="/dashboard/profile"
+                      href="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setIsUserMenuOpen(false)}
                     >

@@ -45,16 +45,16 @@ export default function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 20 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-zinc-400 shadow-xl z-50 flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-medium">Shopping Cart</h2>
+              <h2 className="text-lg text-black font-medium">Shopping Cart</h2>
               <button
                 onClick={toggleCart}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-black" />
               </button>
             </div>
 
@@ -62,8 +62,8 @@ export default function CartDrawer() {
             <div className="flex-1 overflow-y-auto">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full p-4">
-                  <ShoppingBag className="w-16 h-16 text-gray-400 mb-4" />
-                  <p className="text-gray-500">Your cart is empty</p>
+                  <ShoppingBag className="w-16 h-16 text-gray-700 mb-4" />
+                  <p className="text-gray-700">Your cart is empty</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-200">

@@ -6,25 +6,25 @@ const categories = [
   {
     name: 'Men\'s Collection',
     description: 'Elevate your style with our premium menswear',
-    image: '/categories/mens.jpg',
+    image: '/categories/men/main.png',
     href: '/category/men',
   },
   {
     name: 'Women\'s Collection',
     description: 'Discover the latest trends in women\'s fashion',
-    image: '/categories/womens.jpg',
+    image: '/categories/women/main.png',
     href: '/category/women',
   },
   {
     name: 'Kids Collection',
     description: 'Adorable styles for your little ones',
-    image: '/categories/kids.jpg',
+    image: '/categories/kids/main.png',
     href: '/category/kids',
   },
   {
     name: 'Accessories',
     description: 'Complete your look with our accessories',
-    image: '/categories/accessories.jpg',
+    image: '/categories/men/accessories/main.png',
     href: '/category/accessories',
   },
 ];

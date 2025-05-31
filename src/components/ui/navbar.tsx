@@ -29,7 +29,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link 
-              href="/dashboard" 
+              href="/" 
               className="flex items-center space-x-2 text-primary hover:text-primary/90 transition-colors"
             >
               <Icons.store className="h-6 w-6" />

@@ -6,9 +6,9 @@ import Link from 'next/link';
 
 export default function AboutPage() {
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background container mx-auto min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
+      <section className="relative mx-5 max-sm:mx-2 py-20 overflow-hidden">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -26,7 +26,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Story */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 mx-5 max-sm:mx-2 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -65,7 +65,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Values */}
-      <section className="py-16">
+      <section className="py-16 mx-5 max-sm:mx-2">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -116,7 +116,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 mx-5 max-sm:mx-2  bg-muted/30">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -179,7 +179,7 @@ export default function AboutPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16">
+      <section className="py-16 mx-5 max-sm:mx-2">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div

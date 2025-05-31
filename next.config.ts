@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
         pathname: '/seed/**', // Allow paths like /seed/mens-shirt1/800/800
       },
+      {
+        protocol:'https',
+        hostname:'rukminim2.flixcart.com',
+        pathname:'/**'
+      }
     ],
   },
 };

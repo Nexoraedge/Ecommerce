@@ -1,13 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { Twitter, Instagram, Youtube } from 'lucide-react';
+import { Icons } from '@/components/ui/icons';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: Facebook, href: '#' },
+    { icon: Icons.apple, href: '#' },
     { icon: Twitter, href: '#' },
     { icon: Instagram, href: '#' },
     { icon: Youtube, href: '#' },

@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
 
     // Refresh session and get current session data
     const { data: { session }, error } = await supabase.auth.getSession();
-
+    
     if (error) {
       console.error('Auth error:', error);
       return response;
@@ -46,9 +46,16 @@ export async function middleware(request: NextRequest) {
 
     // Handle authentication for protected routes
     const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
-    const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard');
+    const isProtectedRoute = !isAuthRoute && 
+      (
+        request.nextUrl.pathname.startsWith('/account') ||
+        request.nextUrl.pathname.startsWith('/orders') ||
+        request.nextUrl.pathname.startsWith('/wishlist') ||
+        request.nextUrl.pathname.startsWith('/checkout')
+      );
 
-    if (isDashboardRoute && !session) {
+    // Only redirect to sign in if it's a protected route and user is not authenticated
+    if (isProtectedRoute && !session) {
       // Save the original URL to redirect back after login
       const redirectUrl = new URL('/auth/signin', request.url);
       redirectUrl.searchParams.set('next', request.nextUrl.pathname);
@@ -57,7 +64,7 @@ export async function middleware(request: NextRequest) {
 
     if (isAuthRoute && session) {
       // Get the intended destination or default to dashboard
-      const next = request.nextUrl.searchParams.get('next') || '/dashboard';
+      const next = request.nextUrl.searchParams.get('next') || '/';
       return NextResponse.redirect(new URL(next, request.url));
     }
 

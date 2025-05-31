@@ -1,12 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import useSmartSearch from './useSmartSearch';
 
 export function useSearch() {
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { search: smartSearch, results: smartResults } = useSmartSearch();
+  
+  // Initialize query from URL if present
+  useEffect(() => {
+    const searchQuery = searchParams?.get('search');
+    if (searchQuery) {
+      setQuery(searchQuery);
+      smartSearch(searchQuery);
+    }
+  }, [searchParams, smartSearch]);
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) {
@@ -15,9 +27,10 @@ export function useSearch() {
     
     if (query.trim()) {
       setIsSearching(true);
+      // Perform smart search first
+      smartSearch(query.trim());
+      // Navigate to products page with search query
       router.push(`/products?search=${encodeURIComponent(query.trim())}`);
-      // Reset query after search
-      setQuery('');
       setIsSearching(false);
     }
   };
@@ -31,7 +44,8 @@ export function useSearch() {
     setQuery,
     isSearching,
     handleSearch,
-    clearSearch
+    clearSearch,
+    smartResults
   };
 }
 
